@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,4 +14,40 @@ model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
   name  String?
+}
+
+model Candidate {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  phone     String
+  address   String
+  createdAt DateTime @default(now())
+
+  cvOriginalName   String?
+  cvStoredFileName String?
+  cvMimeType       String?
+  cvSizeBytes      Int?
+
+  educationEntries      EducationEntry[]
+  workExperienceEntries WorkExperienceEntry[]
+}
+
+model EducationEntry {
+  id          Int       @id @default(autoincrement())
+  candidateId Int
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  institution String
+  degree      String
+  yearEnd     String?
+}
+
+model WorkExperienceEntry {
+  id          Int       @id @default(autoincrement())
+  candidateId Int
+  candidate   Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  company     String
+  role        String
+  description String?
 }

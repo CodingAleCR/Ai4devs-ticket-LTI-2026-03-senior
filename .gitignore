@@ -32,3 +32,6 @@ docker-compose.override.yml
 
 # Dat
 db_data/*
+
+# CV uploads (local dev)
+**/backend/uploads/

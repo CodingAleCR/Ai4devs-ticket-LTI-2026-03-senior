@@ -68,6 +68,27 @@ npm start
 
 The backend server will be running at http://localhost:3010, and the frontend will be available at http://localhost:3000.
 
+### Backend environment variables
+
+Copy `backend/.env.example` to `backend/.env` and set at least `DATABASE_URL` (see Docker Compose credentials below).
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `CORS_ORIGIN` | Allowed browser origin for CORS (default `http://localhost:3000`) |
+| `UPLOAD_DIR` | Folder for uploaded CV files (default `backend/uploads/cvs`) |
+| `PORT` | API port (default `3010`) |
+
+The CRA dev server uses `proxy` in `frontend/package.json` so `fetch('/api/...')` reaches the backend on port 3010.
+
+### Candidate API (development — no authentication)
+
+- `POST /api/candidates` — `multipart/form-data`: `firstName`, `lastName`, `email`, `phone`, `address`, `educationJson`, `experienceJson` (JSON arrays), optional `cv` (PDF or DOCX only)
+- `GET /api/suggestions/education?q=` — distinct institution values for autocomplete
+- `GET /api/suggestions/experience?q=` — distinct company values for autocomplete
+
+For production, add recruiter authentication, HTTPS, rate limits, and a policy for CV storage and retention.
+
 ## Docker y PostgreSQL
 
 This project uses Docker to run a PostgreSQL database. Here's how to get it up and running:
@@ -80,14 +101,11 @@ docker-compose up -d
 ```
 This will start a PostgreSQL database in a Docker container. The -d flag runs the container in detached mode, meaning it runs in the background.
 
-To access the PostgreSQL database, you can use any PostgreSQL client with the following connection details:
- - Host: localhost
- - Port: 5432
- - User: postgres
- - Password: password
- - Database: mydatabase
+To access the PostgreSQL database, use the credentials from `docker-compose.yml` (for the default compose file in this repo: user `LTIdbUser`, database `LTIdb`, password as set in compose). Example `DATABASE_URL`:
 
-Please replace User, Password, and Database with the actual user, password, and database name specified in your .env file.
+`postgresql://LTIdbUser:<POSTGRES_PASSWORD>@localhost:5432/LTIdb`
+
+Replace `<POSTGRES_PASSWORD>` with the value in `docker-compose.yml` for `POSTGRES_PASSWORD`.
 
 To stop the Docker container, run the following command:
 ```
@@ -164,6 +182,14 @@ npm start
 
 El servidor backend estará corriendo en http://localhost:3010 y el frontend estará disponible en http://localhost:3000.
 
+### Variables de entorno (backend)
+
+Copia `backend/.env.example` a `backend/.env` y configura al menos `DATABASE_URL` (ver credenciales de Docker más abajo). Variables: `DATABASE_URL`, `CORS_ORIGIN`, `UPLOAD_DIR`, `PORT` (ver tabla en la sección en inglés). El frontend en desarrollo usa `proxy` en `frontend/package.json` para enrutar `/api` al puerto 3010.
+
+### API de candidatos (desarrollo — sin autenticación)
+
+Mismos endpoints que en la sección en inglés: `POST /api/candidates`, sugerencias `GET /api/suggestions/education` y `GET /api/suggestions/experience`. En producción añade autenticación de reclutador, HTTPS y límites de uso.
+
 ## Docker y PostgreSQL
 
 Este proyecto usa Docker para ejecutar una base de datos PostgreSQL. Así es cómo ponerlo en marcha:
@@ -176,14 +202,7 @@ docker-compose up -d
 ```
 Esto iniciará una base de datos PostgreSQL en un contenedor Docker. La bandera -d corre el contenedor en modo separado, lo que significa que se ejecuta en segundo plano.
 
-Para acceder a la base de datos PostgreSQL, puedes usar cualquier cliente PostgreSQL con los siguientes detalles de conexión:
- - Host: localhost
- - Port: 5432
- - User: postgres
- - Password: password
- - Database: mydatabase
-
-Por favor, reemplaza User, Password y Database con el usuario, la contraseña y el nombre de la base de datos reales especificados en tu archivo .env.
+Para acceder a la base de datos, usa las credenciales definidas en `docker-compose.yml` (usuario `LTIdbUser`, base `LTIdb`, contraseña `POSTGRES_PASSWORD` del fichero). Ejemplo de `DATABASE_URL`: `postgresql://LTIdbUser:<POSTGRES_PASSWORD>@localhost:5432/LTIdb`.
 
 Para detener el contenedor Docker, ejecuta el siguiente comando:
 ```
